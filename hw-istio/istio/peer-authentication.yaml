@@ -1,0 +1,8 @@
+apiVersion: security.istio.io/v1beta1
+kind: PeerAuthentication
+metadata:
+  name: muffin-app-mtls
+  namespace: muffin-app
+spec:
+  mtls:
+    mode: STRICT
