@@ -1,7 +1,15 @@
-# IntelliJ IDEA
+# JetBrains IDE
 .idea/
 *.iml
-*.iws
 *.ipr
-modules.xml
-.idea_modules/
+*.iws
+*.xml
+
+# Default ignored files
+/shelf/
+/.idea/workspace.xml
+# Editor-based HTTP Client requests
+/httpRequests/
+# Datasource local storage ignored files
+/dataSources/
+/dataSources.local.xml
