@@ -1,0 +1,110 @@
+name: muffin-wallet
+
+replicaCount: 1
+
+image:
+  repository: aadan1lov/muffin-wallet
+  pullPolicy: Always
+  tag: "1.1.0"
+
+nginx:
+  image: nginx:1.29.3
+
+service:
+  type: ClusterIP
+  port: 80
+  targetPort: 8081
+
+logService:
+  port: 80
+  targetPort: 80
+
+livenessProbe:
+  httpGet:
+    path: /actuator/health/liveness
+    port: 8081
+  initialDelaySeconds: 30
+  periodSeconds: 5
+
+readinessProbe:
+  httpGet:
+    path: /actuator/health/readiness
+    port: 8081
+  initialDelaySeconds: 5
+  periodSeconds: 10
+
+envSecret:
+  SPRING_DATASOURCE_PASSWORD: bXVmZmluLXdhbGxldA==
+
+envConfig:
+  JDK_JAVA_OPTIONS: "-Dspring.config.additional-location=/app/config/application.yaml"
+
+applicationConfig: |
+  ---
+  server:
+    port: 8081
+
+  spring:
+    datasource:
+      url: jdbc:postgresql://host.minikube.internal:5432/muffin_wallet
+      username: muffin-wallet
+
+  logging.file.name: /logs/app.log
+
+  currency:
+    service:
+      url: http://muffin-currency:8083/rate
+
+  management:
+    endpoints:
+      web:
+        exposure:
+          include: '*'
+    endpoint:
+      health:
+        probes:
+          enabled: true
+        show-details: always
+    metrics:
+      enable:
+        all: true
+      distribution:
+        percentiles-histogram:
+          "[http.server.requests]": true
+    prometheus:
+      metrics:
+        export:
+          enabled: true
+
+nginxConfig: |
+  events {}
+
+  http {
+    server {
+      listen 80;
+      location /logs {
+        alias /usr/share/nginx/html;
+        autoindex on;
+      }
+    }
+  }
+
+ingress:
+  enabled: true
+  className: nginx
+  hosts:
+    - host: muffin-wallet.ru
+      paths:
+        - path: /
+          serviceName: muffin-wallet
+          servicePort: 80
+
+    - host: muffin-wallet-log.ru
+      paths:
+        - path: /logs
+          serviceName: muffin-wallet-log
+          servicePort: 80
+
+#serviceAccount:
+#  create: true
+#  name: muffin-wallet-sa
