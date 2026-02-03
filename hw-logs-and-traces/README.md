@@ -32,6 +32,46 @@
 
 `Дедлайн сдачи 01.02.2026 23:59`
 
+## Реализация
+- Обновил docker-compose файл добавив в него сервисы Loki и Zipkin для сбора логов и трейсов.
+- Добавил promtail контейнер в манифест muffin-wallet для сбора логов и отправки их в Loki.
+- Добавил конфигурацию для сбора логов в promtail
+  ```yaml
+    apiVersion: v1
+    kind: ConfigMap
+    metadata:
+      name: {{ .Values.name }}-promtail-config
+      labels:
+        app: {{ .Values.name }}
+    data:
+      promtail-config.yaml: |
+        server:
+          http_listen_port: 9080
+          grpc_listen_port: 0
+
+      positions:
+        filename: /tmp/positions.yaml
+
+      clients:
+        - url: {{ .Values.promtail.lokiUrl }}
+
+      scrape_configs:
+        - job_name: app-logs
+          pipeline_stages:
+            - regex:
+                expression: '^(?P<timestamp>\S+)\s+(?P<logLevel>INFO|ERROR|WARN|DEBUG)\s+\[(?P<traceId>[a-f0-9]*),(?P<spanId>[a-f0-9]*)\]'
+  
+            - labels:
+                traceId:
+                logLevel:
+        static_configs:
+          - targets:
+              - localhost
+          labels:
+            job: {{ .Values.name }}
+            __path__: /logs/*.log
+   ```
+
 ## Отчет
 1. Для запуска выполните следующие команды:
     - Запустите docker с БД, Loki и Zipkin
