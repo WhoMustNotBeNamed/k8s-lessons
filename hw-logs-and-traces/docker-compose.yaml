@@ -1,0 +1,71 @@
+version: "3.8"
+services:
+  prometheus:
+    network_mode: host
+    image: prom/prometheus
+    container_name: prometheus
+    ports:
+      - '9090:9090'
+    volumes:
+      - ./prometheus.yaml:/etc/prometheus/prometheus.yaml
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yaml'
+      - '--web.listen-address=:9090'
+      - '--web.enable-lifecycle'
+
+  grafana:
+    network_mode: host
+    image: grafana/grafana
+    container_name: grafana
+    ports:
+      - '3000:3000'
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./grafana-data:/etc/grafana/provisioning
+      - ./grafana-data/dashboards/json:/var/lib/grafana/dashboards
+    depends_on:
+      - prometheus
+
+  postgres:
+    image: postgres
+    ports:
+      - '5432:5432'
+    environment:
+      - POSTGRES_USER=muffin-wallet
+      - POSTGRES_PASSWORD=muffin-wallet
+      - POSTGRES_DB=muffin_wallet
+    volumes:
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+
+  postgres_exporter:
+    network_mode: host
+    image: prometheuscommunity/postgres-exporter
+    container_name: postgres_exporter
+    environment:
+      DATA_SOURCE_NAME: "postgresql://muffin-wallet:muffin-wallet@localhost:5432/muffin_wallet?sslmode=disable"
+#      DATA_SOURCE_NAME="postgresql://user:password@host:port/dbname"
+    ports:
+      - "9187:9187"
+    depends_on:
+      - postgres
+
+  loki:
+    image: grafana/loki:latest
+    container_name: loki
+    ports:
+      - '3100:3100'
+    command: -config.file=/etc/loki/local-config.yaml
+
+  zipkin:
+    image: openzipkin/zipkin:latest
+    container_name: zipkin
+    ports:
+      - '9411:9411'
+    restart: unless-stopped
+
+volumes:
+  prometheus_data:
+  grafana_data:
