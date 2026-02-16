@@ -13,6 +13,8 @@ spec:
     metadata:
       labels:
         app: {{ .Release.Name }}
+      annotations:
+        instrumentation.opentelemetry.io/inject-java: "true"
     spec:
       volumes:
         - name: application-config-volume

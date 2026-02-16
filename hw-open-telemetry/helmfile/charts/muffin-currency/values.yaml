@@ -7,4 +7,4 @@ service:
   port: 8083
 application:
   port: 8080
-  otelUrl: roothost:4317
+  otelUrl: otel-collector-collector:4317

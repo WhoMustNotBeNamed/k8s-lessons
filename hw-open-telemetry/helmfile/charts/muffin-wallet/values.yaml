@@ -13,7 +13,7 @@ envConfigMap:
 configMap:
   name: muffin-wallet
   database:
-    host: roothost
+    host: host.minikube.internal
     port: 5432
     name: muffin_wallet
     username: muffin-wallet
