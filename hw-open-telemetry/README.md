@@ -20,7 +20,7 @@
 Можно сдавать без использования istio
   
 `Штрафы`</br>
--4 Collector развернут в docker-comntainer
+-4 Collector развернут в docker-container
 -2 Collector развернут не через operator
   
 `Дедлайн сдачи`</br>
@@ -28,7 +28,7 @@
 18.02.2026 18:10
 
 ## Реализация
-1. Разворачиваем OpenTelemetry Operator согласно [инструкции](OpenTelemetry Operator)
+1. Разворачиваем OpenTelemetry Operator согласно [инструкции](https://opentelemetry.io/docs/platforms/kubernetes/operator/)
     - Устанавливаем cert-manager командой:
       ```bash
       kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.19.2/cert-manager.yaml
