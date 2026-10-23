@@ -1,6 +1,0 @@
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: {{ .Values.name }}-env
-data:
-  JDK_JAVA_OPTIONS: {{ .Values.envConfig.JDK_JAVA_OPTIONS }}
