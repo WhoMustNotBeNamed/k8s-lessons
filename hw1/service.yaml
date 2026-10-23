@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: muffin-wallet
+  labels:
+    app: muffin-wallet
+spec:
+  selector:
+    app: muffin-wallet
+  ports:
+    - port: 80
+      targetPort: 8080
+  

@@ -1,0 +1,28 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: muffin-wallet-config
+  labels:
+    app: muffin-wallet
+data:
+  SPRING_DATASOURCE_URL: jdbc:postgresql://host.minikube.internal:5432/muffin_wallet
+  SPRING_DATASOURCE_USERNAME: muffin-wallet
+  SPRING_DATASOURCE_PASSWORD: muffin-wallet
+  SPRINGDOC_SERVER_URL: https://muffin-wallet-ingress.ru
+  CURRENCY_SERVICE_URL: http:///muffin-currency:80/rate
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: muffin-wallet-pod
+  labels:
+    app: muffin-wallet
+spec:
+  containers:
+    - image: whomustnotbenamed/muffin-wallet-server:latest
+      name: muffin-wallet
+      ports:
+        - containerPort: 8080
+      envFrom:
+        - configMapRef:
+            name: muffin-wallet-config

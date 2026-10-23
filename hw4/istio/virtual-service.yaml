@@ -1,0 +1,30 @@
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: muffin-wallet-vs
+spec:
+  hosts:
+    - "muffin-wallet.ru"
+  gateways:
+    - muffin-wallet-gateway
+  http:
+    - match:
+        - uri:
+            prefix: /logs
+      route:
+        - destination:
+            host: muffin-wallet-log
+            port:
+              number: 80
+    - match:
+        - uri:
+            prefix: /
+      route:
+        - destination:
+            host: muffin-wallet
+            port:
+              number: 80
+      timeout: 5s
+      retries:
+        attempts: 3
+        perTryTimeout: 2s

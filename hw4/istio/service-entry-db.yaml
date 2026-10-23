@@ -1,0 +1,14 @@
+apiVersion: networking.istio.io/v1beta1
+kind: ServiceEntry
+metadata:
+  name: external-database
+  namespace: muffin-app
+spec:
+  hosts:
+    - host.minikube.internal
+  ports:
+    - number: 5432
+      name: postgres
+      protocol: TCP
+  location: MESH_EXTERNAL
+  resolution: DNS

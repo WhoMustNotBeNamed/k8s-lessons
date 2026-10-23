@@ -1,0 +1,22 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: muffin-wallet
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+spec:
+  tls:
+    - hosts:
+        - muffin-wallet-ingress.ru
+      secretName: muffin-wallet-tls
+  rules:
+    - host: muffin-wallet-ingress.ru
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: muffin-wallet
+                port:
+                  number: 80

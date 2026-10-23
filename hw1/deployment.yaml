@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: muffin-wallet
+  labels:
+    app: muffin-wallet
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: muffin-wallet
+  template:
+    metadata:
+      name: muffin-wallet
+      labels:
+        app: muffin-wallet
+    spec:
+      containers:
+        - image: whomustnotbenamed/muffin-wallet:1.1.0
+          name: muffin-wallet
+          ports:
+            - containerPort: 8080
+          envFrom:
+            - configMapRef:
+                name: muffin-wallet-config
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: muffin-wallet
+  labels:
+    app: muffin-wallet
+spec:
+  selector:
+    app: muffin-wallet
+  ports:
+    - port: 80
+      targetPort: 8080
